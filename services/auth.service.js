@@ -1,8 +1,7 @@
 const { emailValidation, notEmpty, lengthValidation } = require("../validators/auth.validator");
-const { hashPassword } = require("../utils/hashing");
-const asyncHandler = require("../middleware/asyncHandler");
-const { registerRepository } = require("../repositories/auth.repository");
-const { json } = require("express");
+const { hashPassword, verifyPassword } = require("../utils/hashing");
+const { registerRepository, getHashByUsername, loginRepository } = require("../repositories/auth.repository");
+const { generateAccessToken, generateRefreshToken, hashRefreshToken } = require("../utils/jwt");
 
 async function registerService(email, username, password) {
     //Email validation
@@ -23,14 +22,58 @@ async function registerService(email, username, password) {
     }
     catch(err){
         if(err.code == "23505"){
-            const err = new Error("This username is already taken. Pleasy try another one");
-            err.status = 409
+            const error = new Error("This username is already taken. Pleasy try another one");
+            error.status = 409
 
-            throw err
+            throw error
+        }
+        else{
+            const error = new Error("Undefined error on adding your account on db");
+            error.status = 500;
+
+            throw error;
         }
     }
 }
 
+async function loginService(username, password) {
+    //Username Validation
+    notEmpty(username, "Username");
+
+    //Password Validation
+    notEmpty(password, "Password");
+
+    const userInfo = await getHashByUsername(username);
+
+    if(userInfo[0]){
+        const hashedPassword = userInfo[0].hash_password;
+        const userId = userInfo[0].id;
+
+        const isRightPassword = await verifyPassword(hashedPassword, password);
+
+        if(isRightPassword){
+            const access = generateAccessToken(userId);
+            const refresh = generateRefreshToken();
+
+            const hashedRefresh = hashRefreshToken(refresh);
+            const createdAt = Date.now();
+            const expiresAt = createdAt + 30 * 24 * 60 * 60 * 1000;
+
+            await loginRepository(userId, hashedRefresh);
+
+            return { accessToken: access, refreshToken: refresh }
+        }
+    }
+
+    const err = new Error("Invalid credentials");
+    err.status = 401;
+
+    throw err;
+
+    
+}
+
 module.exports = {
-    registerService
+    registerService,
+    loginService
 }
