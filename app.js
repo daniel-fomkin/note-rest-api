@@ -1,5 +1,6 @@
 const express = require("express");
 const noteRouter = require("./routes/note.router");
+const errorHandler = require("./middleware/errorHandler")
 
 const app = express();
 
@@ -10,5 +11,6 @@ app.get("/", (req, res) => {
 });
 
 app.use(("/api"), noteRouter);
+app.use(errorHandler);
 
 module.exports = app;

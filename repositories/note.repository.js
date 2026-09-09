@@ -7,10 +7,15 @@ async function createRepository(title, text, owner) {
 }
 
 //Read
+async function readRepository(userId) {
+    const response = await db.query("SELECT * FROM notes WHERE owner_id = $1 ORDER BY created_at", [userId]);
+
+    return response.rows;
+}
 
 //Update
-async function updateRepository(noteId, newContent) {
-    const response = await db.query("UPDATE notes SET note_name = COALESCE($1, note_name), note_text = COALESCE($2, note_text) WHERE id = $2 RETURNING *", [newContent, noteId]);
+async function updateRepository(noteId, newText, newTitle) {
+    const response = await db.query("UPDATE notes SET note_name = COALESCE($1, note_name), note_text = COALESCE($2, note_text) WHERE id = $3 RETURNING *", [newText, newTitle, noteId]);
     return response.rows[0];
 }
 
@@ -24,5 +29,6 @@ async function deleteRepository(noteId) {
 module.exports = {
     createRepository,
     deleteRepository,
-    updateRepository
+    updateRepository,
+    readRepository
 }
