@@ -5,6 +5,13 @@ async function createRepository(title, text, owner) {
     return response.rows[0]
 }
 
+async function deleteRepository(noteId) {
+    const response = await db.query("DELETE FROM notes WHERE id = $1", [noteId]);
+
+    return response.rows[0]
+}
+
 module.exports = {
-    createRepository
+    createRepository,
+    deleteRepository
 }
