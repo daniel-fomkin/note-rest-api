@@ -1,78 +1,44 @@
-const { createService, deleteService, updateService } = require("../services/note.service");
+const { createService, deleteService, updateService, readService } = require("../services/note.service");
 
 //Create
-async function createController(req, res){
-    try{
-        const { title, text, owner } = req.body;
+async function createController(req, res) {
+    const { title, text, owner } = req.body;
 
-        const dbResponse = await createService(title, text, owner);
+    const dbResponse = await createService(title, text, owner);
 
-        res.status(201).json(await dbResponse);
-    }    
-    catch(err){
-
-        res.status(500)
-
-        if(err.status){
-            res.status(err.status)
-        }
-
-        res.json({
-            message: err.message
-        })
-    }
+    res.status(201).json(await dbResponse);
 
 }
 
 //Read
+async function readController(req, res) {
+    const { userId } = req.params;
+    
+    const notes = await readService(userId);
+
+    res.json(notes);
+}
 
 //Update
 async function updateController(req, res) {
-    try{
-        const { note, title, text } = req.body;
+    const { note, title, text } = req.body;
+    await updateService(note, title, text);
 
-        await updateService(note, title, text);
-        res.status(200).send("OK")
-    }
-    catch (err){
-        res.status(500);
-
-        if(err.status){
-            res.status(err.status);
-        }
-
-        res.json({
-            message: err.message
-        })
-    }
+    res.status(200).send("OK")
 }
 //Delete
 async function deleteController(req, res) {
-    try{
-        const { note } = req.body;
+    const { note } = req.body;
 
-        await deleteService(note)
-
-        res.status(200).json({
-            message: "Succeful deleted"
-        })
-
-    }
-    catch(err){
-        res.status(500);
-
-        if(err.status){
-            res.status(err.status);
-        }
-
-        res.json({
-            message: err.message
-        });
-    }
+    await deleteService(note);
+    res.status(200).json({
+        message: "Succeful deleted"
+    })
 }
 
 module.exports = {
     createController,
     deleteController,
-    updateController
+    updateController,
+    readController
 }

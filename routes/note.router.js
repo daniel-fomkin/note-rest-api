@@ -1,11 +1,13 @@
 const express = require("express");
-const { createController, deleteController, updateController } = require("../controllers/note.controller");
+const { createController, deleteController, updateController, readController } = require("../controllers/note.controller");
+const asyncHandler = require("../middleware/asyncHandler");
 
 const router = express.Router();
 
 
-router.post("/note", createController);
-router.delete("/note", deleteController);
-router.patch("/note", updateController);
+router.post("/note", asyncHandler(createController));
+router.delete("/note", asyncHandler(deleteController));
+router.patch("/note", asyncHandler(updateController));
+router.get("/note/:userId", asyncHandler(readController));
 
 module.exports = router;

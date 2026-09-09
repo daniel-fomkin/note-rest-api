@@ -1,14 +1,13 @@
-const { createRepository, deleteRepository, updateRepository } = require("../repositories/note.repository");
+const { createRepository, deleteRepository, updateRepository, readRepository } = require("../repositories/note.repository");
 const { stringValidation, idValidation, allEmptyValidation, dbNotFound } = require("../validators/note.validator");
 
 //Create
-async function createService(title, text, owner){
+async function createService(title, text, owner) {
     //Owner id validation
     idValidation(owner, "Owner");
 
     //Title validation
     stringValidation(title, "Title");
-
 
     //Text validation
     stringValidation(text, "Text")
@@ -17,23 +16,32 @@ async function createService(title, text, owner){
 }
 
 //Read
+async function readService(userId) {
+    idValidation(userId, "User");
+
+    const dbReponse = await readRepository(userId);
+
+    dbNotFound(dbReponse[0], "Note");
+
+    return dbReponse
+}
 
 //Update
 async function updateService(noteId, newTitle, newText) {
     idValidation(noteId, "Note");
     allEmptyValidation([newTitle, newText], ["title", "text"]);
 
-    if(newTitle !== undefined){
+    if (newTitle !== undefined) {
         stringValidation(newTitle, "Title");
         const dbReponse = await updateRepository(noteId, newTitle);
-        
+
         dbNotFound(dbReponse, "Note");
     }
 
-    if(newText !== undefined){
+    if (newText !== undefined) {
         stringValidation(newText, "Text");
-        const dbReponse = await updateRepository(noteId, newText);
-        
+        const dbReponse = await updateRepository(noteId, newText, newTitle);
+
         dbNotFound(dbReponse, "Note");
     }
 }
@@ -51,5 +59,6 @@ async function deleteService(noteId) {
 module.exports = {
     createService,
     deleteService,
-    updateService
+    updateService,
+    readService
 }
