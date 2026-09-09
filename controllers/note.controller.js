@@ -1,4 +1,4 @@
-const { createService, deleteService } = require("../services/note.service");
+const { createService, deleteService, updateService } = require("../services/note.service");
 
 //Create
 async function createController(req, res){
@@ -27,7 +27,25 @@ async function createController(req, res){
 //Read
 
 //Update
+async function updateController(req, res) {
+    try{
+        const { note, title, text } = req.body;
 
+        await updateService(note, title, text);
+        res.status(200).send("OK")
+    }
+    catch (err){
+        res.status(500);
+
+        if(err.status){
+            res.status(err.status);
+        }
+
+        res.json({
+            message: err.message
+        })
+    }
+}
 //Delete
 async function deleteController(req, res) {
     try{
@@ -55,5 +73,6 @@ async function deleteController(req, res) {
 
 module.exports = {
     createController,
-    deleteController
+    deleteController,
+    updateController
 }
