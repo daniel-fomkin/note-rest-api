@@ -2,9 +2,11 @@ const { createService, deleteService, updateService, readService } = require("..
 
 //Create
 async function createController(req, res) {
-    const { title, text, owner } = req.body;
+    const { title, text } = req.body;
 
-    const dbResponse = await createService(title, text, owner);
+    const userId = req.user.sub;
+
+    const dbResponse = await createService(title, text, userId);
 
     res.status(201).json(await dbResponse);
 
@@ -12,7 +14,7 @@ async function createController(req, res) {
 
 //Read
 async function readController(req, res) {
-    const { userId } = req.params;
+    const userId = req.user.sub;
     
     const notes = await readService(userId);
 
@@ -22,7 +24,10 @@ async function readController(req, res) {
 //Update
 async function updateController(req, res) {
     const { note, title, text } = req.body;
-    await updateService(note, title, text);
+
+    const userId = req.user.sub;
+
+    await updateService(note, title, text, userId);
 
     res.status(200).send("OK")
 }
@@ -30,7 +35,10 @@ async function updateController(req, res) {
 async function deleteController(req, res) {
     const { note } = req.body;
 
-    await deleteService(note);
+    const userId = req.user.sub;
+
+    await deleteService(note, userId);
+    
     res.status(200).json({
         message: "Succeful deleted"
     })

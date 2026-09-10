@@ -14,14 +14,14 @@ async function readRepository(userId) {
 }
 
 //Update
-async function updateRepository(noteId, newText, newTitle) {
-    const response = await db.query("UPDATE notes SET note_name = COALESCE($1, note_name), note_text = COALESCE($2, note_text) WHERE id = $3 RETURNING *", [newText, newTitle, noteId]);
+async function updateRepository(noteId, newText, newTitle, userId) {
+    const response = await db.query("UPDATE notes SET note_name = COALESCE($1, note_name), note_text = COALESCE($2, note_text) WHERE id = $3 AND owner_id = $4 RETURNING *", [newText, newTitle, noteId, userId]);
     return response.rows[0];
 }
 
 //Delete
-async function deleteRepository(noteId) {
-    const response = await db.query("DELETE FROM notes WHERE id = $1 RETURNING *", [noteId]);
+async function deleteRepository(noteId, userId) {
+    const response = await db.query("DELETE FROM notes WHERE id = $1 AND owner_id = $2 RETURNING *", [noteId, userId]);
 
     return response.rows[0]
 }

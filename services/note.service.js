@@ -27,31 +27,28 @@ async function readService(userId) {
 }
 
 //Update
-async function updateService(noteId, newTitle, newText) {
+async function updateService(noteId, newTitle, newText, userId) {
     idValidation(noteId, "Note");
     allEmptyValidation([newTitle, newText], ["title", "text"]);
 
-    if (newTitle !== undefined) {
+    if(newTitle !== undefined){
         stringValidation(newTitle, "Title");
-        const dbReponse = await updateRepository(noteId, newTitle);
-
-        dbNotFound(dbReponse, "Note");
     }
-
-    if (newText !== undefined) {
+    else{
         stringValidation(newText, "Text");
-        const dbReponse = await updateRepository(noteId, newText, newTitle);
-
-        dbNotFound(dbReponse, "Note");
     }
+
+    const dbReponse = await updateRepository(noteId, newText, newTitle, userId);
+
+    dbNotFound(dbReponse, "Note");
 }
 
 
 //Delete
-async function deleteService(noteId) {
+async function deleteService(noteId, userId) {
     idValidation(noteId, "Note");
 
-    const dbResponse = await deleteRepository(noteId);
+    const dbResponse = await deleteRepository(noteId, userId);
 
     dbNotFound(dbResponse, "Note");
 }

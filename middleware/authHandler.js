@@ -18,3 +18,5 @@ function authHandler(req, res, next){
     req.user = verifyAccessToken(userAccessToken);
     next();
 }
+
+module.exports = authHandler
