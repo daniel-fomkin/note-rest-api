@@ -20,7 +20,8 @@ async function refreshRepository(tokenHash) {
 }
 
 async function deleteRefreshToken(tokenHash) {
-    await db.query("DELETE FROM tokens WHERE token_hash = $1", [tokenHash]);
+    const response = await db.query("DELETE FROM tokens WHERE token_hash = $1 RETURNING *", [tokenHash]);
+    return response.rows
 }
 
 module.exports = {
