@@ -72,7 +72,7 @@ async function loginService(username, password) {
 }
 
 async function logoutService(refreshToken) {
-    notEmpty(refreshToken, "Refrest Token");
+    notEmpty(refreshToken, "Refresh Token");
     const hashedToken = hashRefreshToken(refreshToken);
 
     const dbResponse = await deleteRefreshToken(hashedToken);
