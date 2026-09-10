@@ -28,6 +28,18 @@ function hashRefreshToken(token){
 }
 
 //Verify tokens
+function verifyAccessToken(accessToken){
+    try{
+        return jwt.verify(accessToken, JWT_SECRET);
+    }
+    catch(error){
+        const err = new Error("Bad Access Token.");
+        err.status = 401;
+
+        throw err;
+    }
+}
+
 function verifyRefreshToken(storedTokenHash, token){
     const hashedToken = hashRefreshToken(token);
 
@@ -38,5 +50,6 @@ module.exports = {
     generateAccessToken,
     generateRefreshToken,
     hashRefreshToken,
-    verifyRefreshToken
+    verifyRefreshToken,
+    verifyAccessToken
 }
