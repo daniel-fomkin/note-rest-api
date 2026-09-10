@@ -1,6 +1,6 @@
-const { emailValidation, notEmpty, lengthValidation } = require("../validators/auth.validator");
+const { emailValidation, notEmpty, lengthValidation, dbNotFound } = require("../validators/auth.validator");
 const { hashPassword, verifyPassword } = require("../utils/hashing");
-const { registerRepository, getHashByUsername, loginRepository } = require("../repositories/auth.repository");
+const { registerRepository, getHashByUsername, loginRepository, refreshRepository, deleteRefreshToken } = require("../repositories/auth.repository");
 const { generateAccessToken, generateRefreshToken, hashRefreshToken } = require("../utils/jwt");
 
 async function registerService(email, username, password) {
@@ -56,8 +56,6 @@ async function loginService(username, password) {
             const refresh = generateRefreshToken();
 
             const hashedRefresh = hashRefreshToken(refresh);
-            const createdAt = Date.now();
-            const expiresAt = createdAt + 30 * 24 * 60 * 60 * 1000;
 
             await loginRepository(userId, hashedRefresh);
 
@@ -73,7 +71,34 @@ async function loginService(username, password) {
     
 }
 
+async function refreshService(refreshToken) {
+    notEmpty(refreshToken, "Refrest Token");
+    const hashedToken = hashRefreshToken(refreshToken);
+
+    const dbResponse = await refreshRepository(hashedToken);
+
+    dbNotFound(dbResponse[0], "Refresh Token");
+
+    const expiresAt = dbResponse[0].expires_at;
+
+    if(expiresAt < Date.now()){
+        await deleteRefreshToken(hashedToken);
+
+        const err = new Error("Token is expired");
+        err.status = 401;
+
+        throw err;
+    }
+
+    const userId = dbResponse[0].user_id;
+    const accesToken = generateAccessToken(userId);
+
+    return accesToken;
+
+}
+
 module.exports = {
     registerService,
-    loginService
+    loginService,
+    refreshService
 }

@@ -1,4 +1,5 @@
 const { verifyAccessToken } = require("../utils/jwt");
+const { notEmpty } = require("../validators/auth.validator");
 
 function authHandler(req, res, next){
     const authHeader = req.headers.authorization;
@@ -11,6 +12,8 @@ function authHandler(req, res, next){
     }
 
     const userAccessToken = authHeader.split(" ")[1];
+
+    notEmpty(userAccessToken, "JWT");
 
     req.user = verifyAccessToken(userAccessToken);
     next();
