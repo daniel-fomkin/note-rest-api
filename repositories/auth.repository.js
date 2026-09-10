@@ -14,8 +14,19 @@ async function loginRepository(userId, tokenHash) {
     const response = await db.query("INSERT INTO tokens(user_id, token_hash) VALUES($1, $2)", [userId, tokenHash]);
 }
 
+async function refreshRepository(tokenHash) {
+    const response = await db.query("SELECT user_id, expires_at FROM tokens WHERE token_hash = $1", [tokenHash]);
+    return response.rows
+}
+
+async function deleteRefreshToken(tokenHash) {
+    await db.query("DELETE FROM tokens WHERE token_hash = $1", [tokenHash]);
+}
+
 module.exports = {
     registerRepository,
     getHashByUsername,
-    loginRepository
+    loginRepository,
+    refreshRepository,
+    deleteRefreshToken
 }

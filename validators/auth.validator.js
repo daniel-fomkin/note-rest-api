@@ -29,8 +29,18 @@ function emailValidation(email){
     }
 }
 
+function dbNotFound(dbResponse, whatNotFound) {
+    if (!dbResponse) {
+        const err = new Error(`${whatNotFound} not found`);
+        err.status = 404;
+
+        throw err;
+    }
+}
+
 module.exports = {
     emailValidation,
     notEmpty,
-    lengthValidation
+    lengthValidation,
+    dbNotFound
 }
