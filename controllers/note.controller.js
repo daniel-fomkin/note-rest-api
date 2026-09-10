@@ -8,7 +8,7 @@ async function createController(req, res) {
 
     const dbResponse = await createService(title, text, userId);
 
-    res.status(201).json(await dbResponse);
+    res.status(201).json(dbResponse);
 
 }
 
@@ -38,7 +38,7 @@ async function deleteController(req, res) {
     const userId = req.user.sub;
 
     await deleteService(note, userId);
-    
+
     res.status(200).json({
         message: "Succeful deleted"
     })

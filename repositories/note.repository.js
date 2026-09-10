@@ -15,7 +15,7 @@ async function readRepository(userId) {
 
 //Update
 async function updateRepository(noteId, newText, newTitle, userId) {
-    const response = await db.query("UPDATE notes SET note_name = COALESCE($1, note_name), note_text = COALESCE($2, note_text) WHERE id = $3 AND owner_id = $4 RETURNING *", [newText, newTitle, noteId, userId]);
+    const response = await db.query("UPDATE notes SET note_name = COALESCE($1, note_name), note_text = COALESCE($2, note_text) WHERE id = $3 AND owner_id = $4 RETURNING *", [newTitle, newText, noteId, userId]);
     return response.rows[0];
 }
 

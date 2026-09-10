@@ -10,6 +10,6 @@ router.use(authHandler);
 router.post("/note", asyncHandler(createController));
 router.delete("/note", asyncHandler(deleteController));
 router.patch("/note", asyncHandler(updateController));
-router.get("/note/:userId", asyncHandler(readController));
+router.get("/note", asyncHandler(readController));
 
 module.exports = router;
