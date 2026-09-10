@@ -71,6 +71,15 @@ async function loginService(username, password) {
     
 }
 
+async function logoutService(refreshToken) {
+    notEmpty(refreshToken, "Refrest Token");
+    const hashedToken = hashRefreshToken(refreshToken);
+
+    const dbResponse = await deleteRefreshToken(hashedToken);
+    dbNotFound(dbResponse[0], "Refresh Token");
+
+}
+
 async function refreshService(refreshToken) {
     notEmpty(refreshToken, "Refrest Token");
     const hashedToken = hashRefreshToken(refreshToken);
@@ -97,8 +106,11 @@ async function refreshService(refreshToken) {
 
 }
 
+
+
 module.exports = {
     registerService,
     loginService,
-    refreshService
+    refreshService,
+    logoutService
 }

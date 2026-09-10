@@ -1,4 +1,4 @@
-const { registerService, loginService, refreshService } = require("../services/auth.service");
+const { registerService, loginService, refreshService, logoutService } = require("../services/auth.service");
 
 async function registerController(req, res) {
     const { email, username, password } = req.body;
@@ -19,6 +19,14 @@ async function loginController(req, res) {
     res.status(200).json(tokens);
 }
 
+async function logoutController(req, res) {
+    const { refreshToken } = req.body;
+
+    await logoutService(refreshToken);
+
+    res.status(200).send()
+}
+
 async function refreshController(req, res) {
     const { refreshToken } = req.body;
 
@@ -32,5 +40,6 @@ async function refreshController(req, res) {
 module.exports = {
     registerController,
     loginController,
-    refreshController
+    refreshController,
+    logoutController
 }
