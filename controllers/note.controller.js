@@ -17,9 +17,14 @@ async function readController(req, res) {
     const userId = req.user.sub;
     const { limit, offset } = req.query;
     
-    const notes = await readService(userId, limits, offset);
+    const {notes, hasMore} = await readService(userId, limit, offset);
 
-    res.json(notes);
+    res.json({
+        data: notes,
+        limit: limit,
+        offset: offset,
+        hasMore: hasMore
+    });
 }
 
 //Update

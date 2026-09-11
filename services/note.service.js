@@ -20,9 +20,16 @@ async function readService(userId, limit, offset) {
     idValidation(userId, "User");
 
     if(limit !== undefined && offset !== undefined && isPositiveNumber(limit) && isPositiveNumber(offset) && limit <= 100){
-        const dbResponse = await paginationRepository(userId, limit, offset);
+        const dbResponse = await paginationRepository(userId, limit+1, offset);
         
-        return dbResponse;
+        const hasMore = dbResponse.length === limit + 1 ? true : false;
+
+        dbReponse.pop();
+
+        return {
+            notes: dbResponse,
+            hasMore: hasMore
+        };
     }
 
     const dbReponse = await readRepository(userId);
