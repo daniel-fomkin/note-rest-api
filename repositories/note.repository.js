@@ -13,6 +13,11 @@ async function readRepository(userId) {
     return response.rows;
 }
 
+async function paginationRepository(userId, limit, offset) {
+    const response = await db.query("SELECT * FROM notes WHERE owner_id = $1 ORDER BY created_at OFFSET $2 LIMIT $3", [userId, offset, limit]);
+    return response.rows
+}
+
 //Update
 async function updateRepository(noteId, newText, newTitle, userId) {
     const response = await db.query("UPDATE notes SET note_name = COALESCE($1, note_name), note_text = COALESCE($2, note_text) WHERE id = $3 AND owner_id = $4 RETURNING *", [newTitle, newText, noteId, userId]);
@@ -30,5 +35,6 @@ module.exports = {
     createRepository,
     deleteRepository,
     updateRepository,
-    readRepository
+    readRepository,
+    paginationRepository
 }

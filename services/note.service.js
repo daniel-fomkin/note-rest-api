@@ -1,5 +1,5 @@
-const { createRepository, deleteRepository, updateRepository, readRepository } = require("../repositories/note.repository");
-const { stringValidation, idValidation, allEmptyValidation, dbNotFound } = require("../validators/note.validator");
+const { createRepository, deleteRepository, updateRepository, readRepository, paginationRepository } = require("../repositories/note.repository");
+const { stringValidation, idValidation, allEmptyValidation, dbNotFound, isPositiveNumber } = require("../validators/note.validator");
 
 //Create
 async function createService(title, text, owner) {
@@ -16,12 +16,16 @@ async function createService(title, text, owner) {
 }
 
 //Read
-async function readService(userId) {
+async function readService(userId, limit, offset) {
     idValidation(userId, "User");
 
-    const dbReponse = await readRepository(userId);
+    if(limit !== undefined && offset !== undefined && isPositiveNumber(limit) && isPositiveNumber(offset) && limit <= 100){
+        const dbResponse = await paginationRepository(userId, limit, offset);
+        
+        return dbResponse;
+    }
 
-    dbNotFound(dbReponse[0], "Note");
+    const dbReponse = await readRepository(userId);
 
     return dbReponse
 }

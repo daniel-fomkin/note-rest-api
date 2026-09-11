@@ -41,10 +41,20 @@ function allEmptyValidation(parametrs, parametrNames) {
     }
 }
 
+function isPositiveNumber(num, numName){
+    if(!Number(num) && num < 0){
+        const err = new Error(`${numName} must be a positive number or zero`);
+        err.status = 400;
+
+        throw err;
+    }
+}
+
 
 module.exports = {
     stringValidation,
     idValidation,
     allEmptyValidation,
-    dbNotFound
+    dbNotFound,
+    isPositiveNumber
 }

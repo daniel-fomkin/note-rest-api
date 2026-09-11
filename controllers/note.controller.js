@@ -15,8 +15,9 @@ async function createController(req, res) {
 //Read
 async function readController(req, res) {
     const userId = req.user.sub;
+    const { limit, offset } = req.query;
     
-    const notes = await readService(userId);
+    const notes = await readService(userId, limits, offset);
 
     res.json(notes);
 }
